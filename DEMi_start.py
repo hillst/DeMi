@@ -50,13 +50,12 @@ def check_for_barcode(read_start,barcode_list):
         read_result="unmatched"
     return read_result
 
-def write_to_file(out_dir,write_barcode,full_read_list):
+def write_to_file(out_dir,barcode_filename,full_read_list):
     full_read=""
     for line in full_read_list:
         full_read+=line
     full_read=full_read.strip("\n")
-    print full_read
-    barcode_file=open(out_dir+write_barcode,"a")
+    barcode_file=open(out_dir+barcode_filename,"a")
     barcode_file.write(full_read)
     barcode_file.close()
 
@@ -71,13 +70,11 @@ def main():
     barcodes=load_barcodes(barcodes_file)
     
     fastq_items=fastq_generator(fastq_file)
-   
-    counter=0 
 
-    for full_reads in fastq_items:
-        full_read=next(fastq_items)
+    for full_read in fastq_items:
         read_start=get_read_start(full_read)
         barcode_match=check_for_barcode(read_start,barcodes)
         write_to_file(out_dir,barcode_match,full_read)
 
-main()
+if __name__=="__main__":
+    main()
