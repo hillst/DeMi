@@ -71,10 +71,7 @@ def load_barcodes(barcodes):
 
     return barcode_list
 
-def fastq_generator(R1_fastq,R2_fastq):
-    
-    R1_fastq_file=open(R1_fastq)
-    R2_fastq_file=open(R2_fastq)
+def fastq_generator(R1_fastq_file,R2_fastq_file):
 
     read_description=collections.namedtuple("read_set","ID sequence plus quality")
     
@@ -194,19 +191,20 @@ def main():
         os.system("mkdir "+out_dir)
 
     barcodes=load_barcodes(barcodes_file)
-     
     R1_barcodefile_dict,R2_barcodefile_dict=barcodefile_dict_maker(fastq_files[0],fastq_files[1],barcodes,out_dir)
-   
-    R1barcode_counter={}
 
+    R1barcode_counter={}
     R1cutsite_counter={}
     R2cutsite_counter={}
 
+    
+    R1_fastq_file=open(fastq_files[0])
+    R2_fastq_file=open(fastq_files[1])
+
     # Switch to fastq_generator(*fastq_files)... ? Look into star operator. 
     # ... packing and unpacking collections
-
     # Populating Barcode and Cutsite dictionarys is awkward
-    for full_read in fastq_generator(fastq_files[0],fastq_files[1]):
+    for full_read in fastq_generator(R1_fastq_file,R2_fastq_file):
         R1_set=full_read[0]
         R2_set=full_read[1]
         read_start=get_read_start(R1_set,BC_length)
@@ -232,6 +230,8 @@ def main():
         R1_barcodefile_dict[barcode_match].write(R1_to_write)
         R2_barcodefile_dict[barcode_match].write(R1_to_write)
 
+    R1_fastq_file.close()
+    R2_fastq_file.close()
 
     for barcodefiles in R1_barcodefile_dict.keys():
         R1_barcodefile_dict[barcodefiles].close()
